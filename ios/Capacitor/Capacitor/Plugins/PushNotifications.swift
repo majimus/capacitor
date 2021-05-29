@@ -17,6 +17,7 @@ public class CAPPushNotificationsPlugin : CAPPlugin {
   public override func load() {
     NotificationCenter.default.addObserver(self, selector: #selector(self.didRegisterForRemoteNotificationsWithDeviceToken(notification:)), name: Notification.Name(CAPNotifications.DidRegisterForRemoteNotificationsWithDeviceToken.name()), object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(self.didFailToRegisterForRemoteNotificationsWithError(notification:)), name: Notification.Name(CAPNotifications.DidFailToRegisterForRemoteNotificationsWithError.name()), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveRemoteNotification(notification:)), name: Notification.Name.init("didReceiveRemoteNotification"), object: nil)
   }
 
   /**
@@ -109,6 +110,11 @@ public class CAPPushNotificationsPlugin : CAPPlugin {
         "error": PushNotificationError.tokenParsingFailed.localizedDescription
       ])
     }
+  }
+
+  // get silent (data only) notifications.
+  @objc public func didReceiveRemoteNotification(notification: NSNotification) {
+    notifyListeners("pushNotificationReceived", data: ["data": notification.object])
   }
 
   @objc public func didFailToRegisterForRemoteNotificationsWithError(notification: NSNotification){
